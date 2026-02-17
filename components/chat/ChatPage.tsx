@@ -465,14 +465,31 @@ export function ChatPage({ initialChatId }: ChatPageProps) {
             )}
           </div>
 
-          {/* Right side - Share and More menu */}
+          {/* Right side - Share, More menu, or Login/Signup */}
           <div className="flex items-center gap-2 flex-shrink-0">
-            {!isEmpty && (
-              <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-[var(--bg-surface)] transition-colors text-[var(--text-primary)] text-sm">
-                <Upload className="w-4 h-4" />
-                <span>Share</span>
-              </button>
-            )}
+            {!session ? (
+              <>
+                <button
+                  onClick={() => setAuthModalOpen(true)}
+                  className="px-4 py-1.5 rounded-full bg-white text-black text-sm font-medium hover:opacity-90 transition-opacity"
+                >
+                  Log in
+                </button>
+                <button
+                  onClick={() => setAuthModalOpen(true)}
+                  className="px-4 py-1.5 rounded-full border border-[var(--border-strong)] text-[var(--text-primary)] text-sm font-medium hover:bg-[var(--bg-surface)] transition-colors"
+                >
+                  Sign up for free
+                </button>
+              </>
+            ) : (
+              <>
+                {!isEmpty && (
+                  <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-[var(--bg-surface)] transition-colors text-[var(--text-primary)] text-sm">
+                    <Upload className="w-4 h-4" />
+                    <span>Share</span>
+                  </button>
+                )}
 
             {/* More menu button */}
             {!isEmpty && (
@@ -530,6 +547,8 @@ export function ChatPage({ initialChatId }: ChatPageProps) {
                   )}
                 </AnimatePresence>
               </div>
+            )}
+              </>
             )}
           </div>
         </header>

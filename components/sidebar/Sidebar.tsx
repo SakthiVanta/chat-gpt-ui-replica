@@ -23,7 +23,7 @@ import {
   Users,
   Images,
 } from "lucide-react";
-import { useSession } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import { Logo } from "@/components/ui/Logo";
 import { SettingsModal } from "@/components/settings/SettingsModal";
 
@@ -64,6 +64,10 @@ export function Sidebar({
   const [isProjectsOpen, setIsProjectsOpen] = useState(false);
   const [chatMenuOpen, setChatMenuOpen] = useState<string | null>(null);
   const [menuPosition, setMenuPosition] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [chatToDelete, setChatToDelete] = useState<string | null>(null);
+  const [chatTitleToDelete, setChatTitleToDelete] = useState<string>("");
+  const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
@@ -248,7 +252,10 @@ export function Sidebar({
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                           </svg>
                         </button>
-                        <button className="flex items-center gap-3 w-full px-4 py-2.5 hover:bg-[var(--bg-hover)] transition-colors text-left">
+                        <button
+                          onClick={() => setLogoutConfirmOpen(true)}
+                          className="flex items-center gap-3 w-full px-4 py-2.5 hover:bg-[var(--bg-hover)] transition-colors text-left"
+                        >
                           <LogOut className="w-4 h-4 text-[var(--text-secondary)]" />
                           <span className="text-sm text-[var(--text-primary)]">Log out</span>
                         </button>
@@ -363,6 +370,109 @@ export function Sidebar({
           </AnimatePresence>
         </div>
         <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
+
+        {/* Delete Chat Confirmation Modal */}
+        <AnimatePresence>
+          {deleteConfirmOpen && (
+            <>
+              {/* Backdrop with blur */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[200]"
+                onClick={() => setDeleteConfirmOpen(false)}
+              />
+              {/* Modal */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.15 }}
+                className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[420px] z-[201]"
+              >
+                <div className="bg-[#2a2a2a] rounded-2xl p-6 shadow-2xl">
+                  <h3 className="text-lg font-medium text-white mb-3">Delete chat?</h3>
+                  <p className="text-sm text-[var(--text-secondary)] mb-2">
+                    This will delete <span className="text-white font-medium">{chatTitleToDelete}</span>.
+                  </p>
+                  <p className="text-sm text-[var(--text-muted)] mb-6">
+                    Visit <a href="#" className="underline hover:text-white transition-colors">settings</a> to delete any memories saved during this chat.
+                  </p>
+                  <div className="flex items-center justify-end gap-3">
+                    <button
+                      onClick={() => setDeleteConfirmOpen(false)}
+                      className="px-4 py-2 rounded-lg text-sm font-medium text-white bg-[var(--bg-surface)] hover:bg-[var(--bg-hover)] transition-colors"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={() => {
+                        if (chatToDelete) {
+                          onDeleteChat?.(chatToDelete);
+                        }
+                        setDeleteConfirmOpen(false);
+                        setChatToDelete(null);
+                        setChatTitleToDelete("");
+                      }}
+                      className="px-4 py-2 rounded-lg text-sm font-medium text-white bg-red-600 hover:bg-red-700 transition-colors"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
+
+        {/* Logout Confirmation Modal */}
+        <AnimatePresence>
+          {logoutConfirmOpen && (
+            <>
+              {/* Backdrop with blur */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[200]"
+                onClick={() => setLogoutConfirmOpen(false)}
+              />
+              {/* Modal */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.15 }}
+                className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[360px] z-[201]"
+              >
+                <div className="bg-[#2a2a2a] rounded-2xl p-6 shadow-2xl">
+                  <h3 className="text-lg font-medium text-white mb-3">Log out?</h3>
+                  <p className="text-sm text-[var(--text-secondary)] mb-6">
+                    Are you sure you want to log out of your account?
+                  </p>
+                  <div className="flex items-center justify-end gap-3">
+                    <button
+                      onClick={() => setLogoutConfirmOpen(false)}
+                      className="px-4 py-2 rounded-lg text-sm font-medium text-white bg-[var(--bg-surface)] hover:bg-[var(--bg-hover)] transition-colors"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={() => {
+                        signOut({ callbackUrl: "/" });
+                        setLogoutConfirmOpen(false);
+                      }}
+                      className="px-4 py-2 rounded-lg text-sm font-medium text-white bg-red-600 hover:bg-red-700 transition-colors"
+                    >
+                      Log out
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
       </>
     );
   }
@@ -626,7 +736,10 @@ export function Sidebar({
                 <div className="border-t border-[var(--border-strong)] my-1" />
                 <button
                   onClick={() => {
-                    onDeleteChat?.(chatMenuOpen);
+                    const chat = chats.find(c => c.id === chatMenuOpen);
+                    setChatToDelete(chatMenuOpen);
+                    setChatTitleToDelete(chat?.title || "this chat");
+                    setDeleteConfirmOpen(true);
                     setChatMenuOpen(null);
                   }}
                   className="flex items-center gap-2.5 w-full px-3 py-2 hover:bg-[var(--bg-hover)] transition-colors text-left text-red-400"
@@ -651,9 +764,14 @@ export function Sidebar({
                 <div className="w-6 h-6 rounded-full bg-[#19c59f] flex items-center justify-center text-white text-xs font-medium flex-shrink-0">
                   {session.user?.name?.[0] || session.user?.email?.[0] || "U"}
                 </div>
-                <span className="text-xs text-[var(--text-primary)] truncate flex-1 text-left">
-                  {session.user?.name || session.user?.email?.split("@")[0]}
-                </span>
+                <div className="flex flex-col items-start flex-1 min-w-0">
+                  <span className="text-xs text-[var(--text-primary)] truncate">
+                    {session.user?.name || session.user?.email?.split("@")[0]}
+                  </span>
+                  <span className="text-[10px] font-medium text-[var(--text-secondary)]">
+                    Free
+                  </span>
+                </div>
               </button>
 
               {/* Profile Dropdown */}
@@ -666,6 +784,21 @@ export function Sidebar({
                     transition={{ duration: 0.15 }}
                     className="absolute bottom-full left-0 mb-2 w-56 bg-[var(--bg-surface)] border border-[var(--border-strong)] rounded-xl shadow-lg overflow-hidden z-50"
                   >
+                    <div className="p-3 border-b border-[var(--border-strong)]">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-[#19c59f] flex items-center justify-center text-white font-medium">
+                          {session.user?.name?.[0] || session.user?.email?.[0] || "U"}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-[var(--text-primary)] truncate">
+                            {session.user?.name || session.user?.email?.split("@")[0]}
+                          </p>
+                          <p className="text-xs text-[var(--text-muted)] truncate">
+                            @{session.user?.email?.split("@")[0]}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
                     <div className="py-1">
                       <button className="flex items-center gap-3 w-full px-4 py-2.5 hover:bg-[var(--bg-hover)] transition-colors text-left">
                         <Crown className="w-4 h-4 text-[var(--text-secondary)]" />
@@ -692,7 +825,10 @@ export function Sidebar({
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                         </svg>
                       </button>
-                      <button className="flex items-center gap-3 w-full px-4 py-2.5 hover:bg-[var(--bg-hover)] transition-colors text-left">
+                      <button
+                        onClick={() => setLogoutConfirmOpen(true)}
+                        className="flex items-center gap-3 w-full px-4 py-2.5 hover:bg-[var(--bg-hover)] transition-colors text-left"
+                      >
                         <LogOut className="w-4 h-4 text-[var(--text-secondary)]" />
                         <span className="text-sm text-[var(--text-primary)]">Log out</span>
                       </button>
@@ -704,13 +840,32 @@ export function Sidebar({
           )}
 
           <div className="space-y-3 mt-4">
-            <button
-              onClick={onLoginClick}
-              className="w-full py-2.5 px-4 rounded-full bg-[var(--bg-code)] text-white text-xs border border-[var(--border-strong)] hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
-            >
-              <Gift className="w-4 h-4" />
-              Claim offer
-            </button>
+            {!session ? (
+              <div className="space-y-3">
+                <div className="space-y-1">
+                  <p className="text-sm font-semibold text-[var(--text-primary)]">
+                    Get responses tailored to you
+                  </p>
+                  <p className="text-xs text-[var(--text-muted)] leading-relaxed">
+                    Log in to get answers based on saved chats, plus create images and upload files.
+                  </p>
+                </div>
+                <button
+                  onClick={onLoginClick}
+                  className="w-full py-2.5 px-4 rounded-full border border-[var(--border-strong)] text-[var(--text-primary)] text-sm font-medium hover:bg-[var(--bg-surface)] transition-colors"
+                >
+                  Log in
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={onLoginClick}
+                className="w-full py-2.5 px-4 rounded-full bg-[var(--bg-code)] text-white text-xs border border-[var(--border-strong)] hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+              >
+                <Gift className="w-4 h-4" />
+                Claim offer
+              </button>
+            )}
           </div>
 
         </div>
@@ -817,6 +972,109 @@ export function Sidebar({
         onClick={onToggle}
       />
       <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
+
+      {/* Delete Chat Confirmation Modal */}
+      <AnimatePresence>
+        {deleteConfirmOpen && (
+          <>
+            {/* Backdrop with blur */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[200]"
+              onClick={() => setDeleteConfirmOpen(false)}
+            />
+            {/* Modal */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.15 }}
+              className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[420px] z-[201]"
+            >
+              <div className="bg-[#2a2a2a] rounded-2xl p-6 shadow-2xl">
+                <h3 className="text-lg font-medium text-white mb-3">Delete chat?</h3>
+                <p className="text-sm text-[var(--text-secondary)] mb-2">
+                  This will delete <span className="text-white font-medium">{chatTitleToDelete}</span>.
+                </p>
+                <p className="text-sm text-[var(--text-muted)] mb-6">
+                  Visit <a href="#" className="underline hover:text-white transition-colors">settings</a> to delete any memories saved during this chat.
+                </p>
+                <div className="flex items-center justify-end gap-3">
+                  <button
+                    onClick={() => setDeleteConfirmOpen(false)}
+                    className="px-4 py-2 rounded-lg text-sm font-medium text-white bg-[var(--bg-surface)] hover:bg-[var(--bg-hover)] transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (chatToDelete) {
+                        onDeleteChat?.(chatToDelete);
+                      }
+                      setDeleteConfirmOpen(false);
+                      setChatToDelete(null);
+                      setChatTitleToDelete("");
+                    }}
+                    className="px-4 py-2 rounded-lg text-sm font-medium text-white bg-red-600 hover:bg-red-700 transition-colors"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* Logout Confirmation Modal */}
+      <AnimatePresence>
+        {logoutConfirmOpen && (
+          <>
+            {/* Backdrop with blur */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[200]"
+              onClick={() => setLogoutConfirmOpen(false)}
+            />
+            {/* Modal */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.15 }}
+              className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[360px] z-[201]"
+            >
+              <div className="bg-[#2a2a2a] rounded-2xl p-6 shadow-2xl">
+                <h3 className="text-lg font-medium text-white mb-3">Log out?</h3>
+                <p className="text-sm text-[var(--text-secondary)] mb-6">
+                  Are you sure you want to log out of your account?
+                </p>
+                <div className="flex items-center justify-end gap-3">
+                  <button
+                    onClick={() => setLogoutConfirmOpen(false)}
+                    className="px-4 py-2 rounded-lg text-sm font-medium text-white bg-[var(--bg-surface)] hover:bg-[var(--bg-hover)] transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => {
+                      signOut({ callbackUrl: "/" });
+                      setLogoutConfirmOpen(false);
+                    }}
+                    className="px-4 py-2 rounded-lg text-sm font-medium text-white bg-red-600 hover:bg-red-700 transition-colors"
+                  >
+                    Log out
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </>
   );
 }
