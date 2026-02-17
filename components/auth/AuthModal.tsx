@@ -25,7 +25,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
   const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
-    
+
     setIsLoading(true);
     await signIn("email", { email, callbackUrl: "/" });
     setIsLoading(false);
@@ -52,21 +52,21 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
             transition={{ duration: 0.2 }}
             className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[400px] z-50"
           >
-            <div className="bg-[#212121] rounded-2xl border border-[#4a4a4a] shadow-2xl overflow-hidden">
+            <div className="bg-[var(--bg-main)] rounded-2xl border border-[var(--border-strong)] shadow-2xl overflow-hidden">
               {/* Close Button */}
               <button
                 onClick={onClose}
-                className="absolute top-4 right-4 p-2 rounded-full hover:bg-[#2f2f2f] text-[#b4b4b4] transition-colors z-10"
+                className="absolute top-4 right-4 p-2 rounded-full hover:bg-[var(--bg-surface)] text-[var(--text-secondary)] transition-colors z-10"
               >
                 <X className="w-5 h-5" />
               </button>
 
               {/* Content */}
               <div className="p-8">
-                <h2 className="text-2xl font-semibold text-center text-[#ececec] mb-2">
+                <h2 className="text-2xl font-semibold text-center text-[var(--text-primary)] mb-2">
                   Log in or sign up
                 </h2>
-                <p className="text-center text-[#8e8e8e] text-sm mb-8">
+                <p className="text-center text-[var(--text-muted)] text-sm mb-8">
                   You'll get smarter responses and can upload files, images, and more.
                 </p>
 
@@ -75,7 +75,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                   {/* Google */}
                   <button
                     onClick={handleGoogleSignIn}
-                    className="flex items-center justify-center gap-3 w-full p-3 rounded-lg border border-[#4a4a4a] hover:bg-[#2f2f2f] transition-colors text-[#ececec] font-medium"
+                    className="flex items-center justify-center gap-3 w-full p-3 rounded-lg border border-[var(--border-strong)] hover:bg-[var(--bg-surface)] transition-colors text-[var(--text-primary)] font-medium"
                   >
                     <svg className="w-5 h-5" viewBox="0 0 24 24">
                       <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -89,7 +89,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                   {/* Apple */}
                   <button
                     onClick={handleAppleSignIn}
-                    className="flex items-center justify-center gap-3 w-full p-3 rounded-lg border border-[#4a4a4a] hover:bg-[#2f2f2f] transition-colors text-[#ececec] font-medium"
+                    className="flex items-center justify-center gap-3 w-full p-3 rounded-lg border border-[var(--border-strong)] hover:bg-[var(--bg-surface)] transition-colors text-[var(--text-primary)] font-medium"
                   >
                     <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
                       <path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" />
@@ -98,7 +98,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                   </button>
 
                   {/* Microsoft */}
-                  <button className="flex items-center justify-center gap-3 w-full p-3 rounded-lg border border-[#4a4a4a] hover:bg-[#2f2f2f] transition-colors text-[#ececec] font-medium">
+                  <button className="flex items-center justify-center gap-3 w-full p-3 rounded-lg border border-[var(--border-strong)] hover:bg-[var(--bg-surface)] transition-colors text-[var(--text-primary)] font-medium">
                     <svg className="w-5 h-5" viewBox="0 0 21 21">
                       <rect x="1" y="1" width="9" height="9" fill="#f25022" />
                       <rect x="1" y="11" width="9" height="9" fill="#00a4ef" />
@@ -109,7 +109,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                   </button>
 
                   {/* Phone */}
-                  <button className="flex items-center justify-center gap-3 w-full p-3 rounded-lg border border-[#4a4a4a] hover:bg-[#2f2f2f] transition-colors text-[#ececec] font-medium">
+                  <button className="flex items-center justify-center gap-3 w-full p-3 rounded-lg border border-[var(--border-strong)] hover:bg-[var(--bg-surface)] transition-colors text-[var(--text-primary)] font-medium">
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                     </svg>
@@ -119,9 +119,9 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
 
                 {/* Divider */}
                 <div className="flex items-center gap-4 my-6">
-                  <div className="flex-1 h-px bg-[#4a4a4a]" />
-                  <span className="text-sm text-[#8e8e8e]">OR</span>
-                  <div className="flex-1 h-px bg-[#4a4a4a]" />
+                  <div className="flex-1 h-px bg-[var(--border-strong)]" />
+                  <span className="text-sm text-[var(--text-muted)]">OR</span>
+                  <div className="flex-1 h-px bg-[var(--border-strong)]" />
                 </div>
 
                 {/* Email Form */}
@@ -131,16 +131,15 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="Email address"
-                    className="w-full px-4 py-3 bg-[#2f2f2f] border border-[#4a4a4a] rounded-lg text-[#ececec] placeholder:text-[#8e8e8e] focus:outline-none focus:border-[#19c59f] transition-colors"
+                    className="w-full px-4 py-3 bg-[var(--bg-surface)] border border-[var(--border-strong)] rounded-lg text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[#19c59f] transition-colors"
                   />
                   <button
                     type="submit"
                     disabled={!email || isLoading}
-                    className={`w-full mt-3 py-3 rounded-lg font-medium transition-colors ${
-                      email && !isLoading
+                    className={`w-full mt-3 py-3 rounded-lg font-medium transition-colors ${email && !isLoading
                         ? "bg-white text-black hover:opacity-90"
-                        : "bg-[#4a4a4a] text-[#8e8e8e] cursor-not-allowed"
-                    }`}
+                        : "bg-[var(--border-strong)] text-[var(--text-muted)] cursor-not-allowed"
+                      }`}
                   >
                     {isLoading ? "Sending..." : "Continue"}
                   </button>

@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { generateResponse, generateResponseWithWebSearch } from "@/lib/gemini";
+import { generateResponse, generateResponseWithWebSearch, generateChatTitle } from "@/lib/gemini";
 
 export async function POST(req: Request) {
   try {
@@ -11,6 +11,7 @@ export async function POST(req: Request) {
     const { message, chatId, useWebSearch } = body;
 
     let chat;
+    let isNewChat = false;
 
     if (chatId) {
       chat = await prisma.chat.findUnique({
@@ -20,9 +21,11 @@ export async function POST(req: Request) {
     }
 
     if (!chat) {
+      isNewChat = true;
+      // Create with a temporary title; AI will generate a better one
       chat = await prisma.chat.create({
         data: {
-          title: message.slice(0, 50) + (message.length > 50 ? "..." : ""),
+          title: "New chat",
           userId: session?.user?.id,
           messages: {
             create: {
@@ -43,12 +46,29 @@ export async function POST(req: Request) {
       });
     }
 
+    // Generate AI title in the background for new chats
+    let generatedTitle = "";
+    if (isNewChat) {
+      generateChatTitle(message).then(async (title) => {
+        generatedTitle = title;
+        try {
+          await prisma.chat.update({
+            where: { id: chat.id },
+            data: { title },
+          });
+        } catch (err) {
+          console.error("Failed to update chat title:", err);
+        }
+      });
+    }
+
     const history = chat.messages.map((msg: any) => ({
       role: msg.role,
       content: msg.content,
     }));
 
     const encoder = new TextEncoder();
+    const chatRef = chat;
     const stream = new ReadableStream({
       async start(controller) {
         try {
@@ -69,7 +89,7 @@ export async function POST(req: Request) {
 
           await prisma.message.create({
             data: {
-              chatId: chat.id,
+              chatId: chatRef.id,
               role: "assistant",
               content: fullResponse,
             },
@@ -86,6 +106,7 @@ export async function POST(req: Request) {
       headers: {
         "Content-Type": "text/plain; charset=utf-8",
         "X-Chat-Id": chat.id,
+        "X-Is-New-Chat": isNewChat ? "true" : "false",
       },
     });
   } catch (error) {

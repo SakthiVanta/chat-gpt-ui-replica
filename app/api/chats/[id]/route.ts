@@ -5,11 +5,11 @@ import { prisma } from "@/lib/prisma";
 
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
-    const { id } = params;
+    const { id } = await params;
 
     const chat = await prisma.chat.findUnique({
       where: { id },
@@ -49,11 +49,11 @@ export async function GET(
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
-    const { id } = params;
+    const { id } = await params;
 
     const chat = await prisma.chat.findUnique({
       where: { id },
@@ -89,11 +89,11 @@ export async function DELETE(
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
-    const { id } = params;
+    const { id } = await params;
     const body = await req.json();
     const { title } = body;
 

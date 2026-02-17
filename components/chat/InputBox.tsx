@@ -18,8 +18,10 @@ import {
 
 interface InputBoxProps {
   onSend: (message: string, useWebSearch?: boolean) => void;
-  onVoiceStart?: () => void;
+  onVoiceStart?: () => void; // Toggle inline STT
   onVoiceStop?: () => void;
+  onVoiceMode?: () => void; // Fullscreen voice mode
+  isListening?: boolean;
   isLoading?: boolean;
   placeholder?: string;
   isLoggedIn?: boolean;
@@ -64,6 +66,8 @@ export function InputBox({
   onSend,
   onVoiceStart,
   onVoiceStop,
+  onVoiceMode,
+  isListening = false,
   isLoading,
   placeholder = "Ask anything",
   isLoggedIn = false,
@@ -127,7 +131,7 @@ export function InputBox({
     return (
       <div className="w-full max-w-2xl mx-auto">
         {/* Greeting */}
-        <h1 
+        <h1
           className="text-center mb-6"
           style={{
             fontWeight: 400,
@@ -141,16 +145,15 @@ export function InputBox({
 
         {/* Centered Input Container - Image 2 Style */}
         <div
-          className={`relative rounded-full border transition-all duration-200 ${
-            isFocused
-              ? "border-[#4a4a4a]"
-              : "border-[#4a4a4a]"
-          } bg-[#2f2f2f]`}
+          className={`relative rounded-full border transition-all duration-200 ${isFocused
+            ? "border-[var(--border-strong)]"
+            : "border-[var(--border-strong)]"
+            } bg-[var(--bg-surface)]`}
         >
           <div className="flex items-center px-4 py-3">
             {/* Left Side - Attachment Icon */}
             <button
-              className="p-2 rounded-full hover:bg-[#3a3a3a] text-[#b4b4b4] transition-colors flex-shrink-0"
+              className="p-2 rounded-full hover:bg-[var(--bg-hover)] text-[var(--text-secondary)] transition-colors flex-shrink-0"
               title="Attach file"
             >
               <Plus className="w-5 h-5" />
@@ -166,27 +169,40 @@ export function InputBox({
               onBlur={() => setIsFocused(false)}
               placeholder={placeholder}
               rows={1}
-              className="flex-1 bg-transparent text-[#ececec] placeholder:text-[#8e8e8e] resize-none outline-none text-base leading-relaxed min-h-[24px] max-h-[200px] mx-3"
+              className="flex-1 bg-transparent text-[var(--text-primary)] placeholder:text-[var(--text-muted)] resize-none outline-none text-base leading-relaxed min-h-[24px] max-h-[200px] mx-3"
             />
 
-            {/* Right Side - Mic & Audio Icons */}
+            {/* Right Side - Mic & Audio/Send Icons */}
             <div className="flex items-center gap-1 flex-shrink-0">
               <button
-                onMouseDown={onVoiceStart}
-                onMouseUp={onVoiceStop}
-                onMouseLeave={onVoiceStop}
-                className="p-2 rounded-full hover:bg-[#3a3a3a] text-[#b4b4b4] transition-colors"
-                title="Voice input"
+                onClick={onVoiceStart}
+                className={`p-2 rounded-full transition-colors ${isListening
+                  ? "bg-red-500 text-white hover:bg-red-600 animate-pulse"
+                  : "hover:bg-[var(--bg-hover)] text-[var(--text-secondary)]"
+                  }`}
+                title={isListening ? "Stop listening" : "Voice input"}
               >
                 <Mic className="w-5 h-5" />
               </button>
 
-              <button
-                className="p-2 rounded-full bg-[#ececec] text-[#212121] hover:opacity-80 transition-opacity"
-                title="Voice mode"
-              >
-                <VoiceWaveIcon className="w-5 h-5" />
-              </button>
+              {hasContent ? (
+                <button
+                  onClick={handleSend}
+                  disabled={isLoading}
+                  className="p-2 rounded-full bg-black dark:bg-white text-white dark:text-black hover:opacity-80 transition-opacity disabled:opacity-50"
+                  title="Send message"
+                >
+                  <ArrowUp className="w-5 h-5" />
+                </button>
+              ) : (
+                <button
+                  onClick={onVoiceMode}
+                  className="p-2 rounded-full bg-[#ececec] dark:bg-[#212121] text-[#212121] dark:text-[#ececec] hover:opacity-80 transition-opacity"
+                  title="Voice conversation mode"
+                >
+                  <VoiceWaveIcon className="w-5 h-5" />
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -199,17 +215,16 @@ export function InputBox({
     <div className="w-full max-w-3xl mx-auto">
       {/* Main Input Container - Rounded style like Image 1 */}
       <div
-        className={`relative rounded-full border transition-all duration-200 ${
-          isFocused
-            ? "border-[#4a4a4a]"
-            : "border-[#4a4a4a]"
-        } bg-[#2f2f2f]`}
+        className={`relative rounded-full border transition-all duration-200 ${isFocused
+          ? "border-[var(--border-strong)]"
+          : "border-[var(--border-strong)]"
+          } bg-[var(--bg-surface)]`}
       >
         <div className="flex items-center px-4 py-3">
           {/* Left Side - Plus Button */}
           <button
             onClick={() => setIsToolsOpen(!isToolsOpen)}
-            className="p-2 rounded-full hover:bg-[#3a3a3a] text-[#b4b4b4] transition-colors flex-shrink-0"
+            className="p-2 rounded-full hover:bg-[var(--bg-hover)] text-[var(--text-secondary)] transition-colors flex-shrink-0"
           >
             <Plus className="w-5 h-5" />
           </button>
@@ -224,27 +239,40 @@ export function InputBox({
             onBlur={() => setIsFocused(false)}
             placeholder={placeholder}
             rows={1}
-            className="flex-1 bg-transparent text-[#ececec] placeholder:text-[#8e8e8e] resize-none outline-none text-base leading-relaxed min-h-[24px] max-h-[200px] mx-3"
+            className="flex-1 bg-transparent text-[var(--text-primary)] placeholder:text-[var(--text-muted)] resize-none outline-none text-base leading-relaxed min-h-[24px] max-h-[200px] mx-3"
           />
 
-          {/* Right Side - Mic & Voice Wave */}
+          {/* Right Side - Mic & Voice/Send */}
           <div className="flex items-center gap-1 flex-shrink-0">
             <button
-              onMouseDown={onVoiceStart}
-              onMouseUp={onVoiceStop}
-              onMouseLeave={onVoiceStop}
-              className="p-2 rounded-full hover:bg-[#3a3a3a] text-[#b4b4b4] transition-colors"
-              title="Voice input"
+              onClick={onVoiceStart}
+              className={`p-2 rounded-full transition-colors ${isListening
+                ? "bg-red-500 text-white hover:bg-red-600 animate-pulse"
+                : "hover:bg-[var(--bg-hover)] text-[var(--text-secondary)]"
+                }`}
+              title={isListening ? "Stop listening" : "Voice input"}
             >
               <Mic className="w-5 h-5" />
             </button>
 
-            <button
-              className="p-2 rounded-full bg-[#ececec] text-[#212121] hover:opacity-80 transition-opacity"
-              title="Voice mode"
-            >
-              <VoiceWaveIcon className="w-5 h-5" />
-            </button>
+            {hasContent ? (
+              <button
+                onClick={handleSend}
+                disabled={isLoading}
+                className="p-2 rounded-full bg-black dark:bg-white text-white dark:text-black hover:opacity-80 transition-opacity disabled:opacity-50"
+                title="Send message"
+              >
+                <ArrowUp className="w-5 h-5" />
+              </button>
+            ) : (
+              <button
+                onClick={onVoiceMode}
+                className="p-2 rounded-full bg-[#ececec] dark:bg-[#212121] text-[#212121] dark:text-[#ececec] hover:opacity-80 transition-opacity"
+                title="Voice conversation mode"
+              >
+                <VoiceWaveIcon className="w-5 h-5" />
+              </button>
+            )}
           </div>
         </div>
 
@@ -256,19 +284,19 @@ export function InputBox({
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 8, scale: 0.96 }}
               transition={{ duration: 0.15 }}
-              className="absolute bottom-full left-0 mb-2 w-64 bg-[#212121] border border-[#4a4a4a] rounded-xl shadow-lg overflow-hidden z-50"
+              className="absolute bottom-full left-0 mb-2 w-64 bg-[var(--bg-main)] border border-[var(--border-strong)] rounded-xl shadow-lg overflow-hidden z-50"
             >
               <div className="py-1">
                 {tools.map((tool, index) => (
                   <button
                     key={tool.id}
                     onClick={() => handleToolSelect(tool.id)}
-                    className="flex items-center gap-3 w-full px-4 py-2.5 hover:bg-[#2f2f2f] transition-colors text-left"
+                    className="flex items-center gap-3 w-full px-4 py-2.5 hover:bg-[var(--bg-surface)] transition-colors text-left"
                   >
-                    <tool.icon className="w-5 h-5 text-[#b4b4b4]" />
-                    <span className="text-sm text-[#ececec]">{tool.label}</span>
+                    <tool.icon className="w-5 h-5 text-[var(--text-secondary)]" />
+                    <span className="text-sm text-[var(--text-primary)]">{tool.label}</span>
                     {index === tools.length - 1 && (
-                      <ChevronRight className="w-4 h-4 ml-auto text-[#b4b4b4]" />
+                      <ChevronRight className="w-4 h-4 ml-auto text-[var(--text-secondary)]" />
                     )}
                   </button>
                 ))}
@@ -285,11 +313,10 @@ export function InputBox({
             <button
               key={tool.id}
               onClick={() => handleToolSelect(tool.id)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-sm transition-all duration-200 ${
-                activeTool === tool.id
-                  ? "border-[#19c59f] bg-[#19c59f]/10 text-[#19c59f]"
-                  : "border-[#4a4a4a] text-[#b4b4b4] hover:border-[#b4b4b4] hover:text-[#ececec]"
-              }`}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-sm transition-all duration-200 ${activeTool === tool.id
+                ? "border-[#19c59f] bg-[#19c59f]/10 text-[#19c59f]"
+                : "border-[var(--border-strong)] text-[var(--text-secondary)] hover:border-[#b4b4b4] hover:text-[var(--text-primary)]"
+                }`}
             >
               <tool.icon className="w-4 h-4" />
               <span>{tool.label}</span>
