@@ -9,12 +9,12 @@ interface LogoProps {
  * ChatGPT logo — loads from /logo.svg as an inline SVG for theme control.
  * Uses `currentColor` so you style it with text color classes (e.g. text-white).
  */
-export function Logo({ size = 22, className = "" }: LogoProps) {
+export function Logo({ size = 20, className = "" }: LogoProps) {
     return (
         <svg
-            width={size}
-            height={size}
-            viewBox="0 0 320 320"
+            width={20}
+            height={20}
+            viewBox="0 0 310 310"
             xmlns="http://www.w3.org/2000/svg"
             className={className}
             role="img"

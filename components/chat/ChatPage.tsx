@@ -9,7 +9,7 @@ import { InputBox } from "@/components/chat/InputBox";
 import { ChatMessage, ThinkingIndicator } from "@/components/chat/ChatMessage";
 import { AuthModal } from "@/components/auth/AuthModal";
 import { VoiceModal } from "@/components/voice/VoiceModal";
-import { MoreHorizontal, Share2, Users, FolderOpen, Pin, Archive, Flag, Trash2, X, Gift } from "lucide-react";
+import { MoreHorizontal, Upload, Users, FolderOpen, Pin, Archive, Flag, Trash2, X, Gift } from "lucide-react";
 
 interface Message {
   id: string;
@@ -469,7 +469,7 @@ export function ChatPage({ initialChatId }: ChatPageProps) {
           <div className="flex items-center gap-2 flex-shrink-0">
             {!isEmpty && (
               <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-[var(--bg-surface)] transition-colors text-[var(--text-primary)] text-sm">
-                <Share2 className="w-4 h-4" />
+                <Upload className="w-4 h-4" />
                 <span>Share</span>
               </button>
             )}
@@ -585,7 +585,7 @@ export function ChatPage({ initialChatId }: ChatPageProps) {
         {/* Input Area */}
         {!isEmpty && (
           <div
-            className={`fixed bottom-0 right-0 bg-[var(--bg-main)] border-t border-[var(--border)] p-4 transition-all duration-200 ease-in-out ${sidebarOpen ? "left-[260px]" : "left-[60px]"}`}
+            className={`fixed bottom-0 right-0 bg-[var(--bg-main)]  p-4 transition-all duration-200 ease-in-out ${sidebarOpen ? "left-[260px]" : "left-[60px]"}`}
           >
             <div className="max-w-3xl mx-auto">
               <InputBox

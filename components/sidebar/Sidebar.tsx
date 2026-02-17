@@ -21,6 +21,7 @@ import {
   MoreHorizontal,
   Archive,
   Users,
+  Images,
 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { Logo } from "@/components/ui/Logo";
@@ -129,11 +130,11 @@ export function Sidebar({
   if (!isOpen) {
     return (
       <>
-        <div className="fixed left-0 top-0 h-full w-[60px] bg-[var(--bg-sidebar)] border-r border-[var(--border)] flex flex-col items-center py-3 z-50">
+        <div className="fixed left-0 top-0 h-full w-[60px] bg-[var(--bg-sidebar)] border-r border-[var(--border)] flex flex-col items-center py-3  z-50">
           {/* Logo - changes to hamburger on hover */}
           <button
             onClick={onToggle}
-            className="p-2 mb-4 rounded-lg hover:bg-[var(--bg-surface)] transition-colors group relative"
+            className="p-4 mb-4 rounded-lg hover:bg-[var(--bg-surface)] transition-colors group relative"
             title="Open sidebar"
           >
             <div className="relative w-6 h-6">
@@ -158,7 +159,7 @@ export function Sidebar({
             className="p-2 mb-4 rounded-lg hover:bg-[var(--bg-surface)] transition-colors"
             title="New chat"
           >
-            <SquarePen className="w-5 h-5 text-[var(--text-primary)]" />
+            <SquarePen className="w-4 h-4 text-[var(--text-primary)]" />
           </button>
 
           {/* Search */}
@@ -175,12 +176,7 @@ export function Sidebar({
             className="p-2 mb-auto rounded-lg hover:bg-[var(--bg-surface)] transition-colors"
             title="Create image"
           >
-            <svg className="w-5 h-5 text-[var(--text-primary)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="10" />
-              <path d="M8 12s1.5-2 4-2 4 2 4 2" />
-              <path d="M9 16c1-1.5 3-2 3-5" />
-              <path d="M15 16c-1-1.5-3-2-3-5" />
-            </svg>
+            <Images className="w-4 h-4 text-[var(--text-primary)]" />
           </button>
 
           {/* Bottom icons */}
@@ -376,8 +372,8 @@ export function Sidebar({
     <>
       <div className="fixed left-0 top-0 h-full w-[260px] bg-[var(--bg-sidebar)] border-r border-[var(--border)] flex flex-col z-50 overflow-hidden">
         {/* Logo with Close button - STICKY TOP */}
-        <div className="flex items-center justify-between p-3 flex-shrink-0">
-          <div className="w-8 h-8">
+        <div className="flex items-center justify-between p-5 flex-shrink-0">
+          <div className="w-4 h-4">
             <Logo size={32} className="text-[var(--text-primary)]" />
           </div>
           <button
@@ -401,12 +397,12 @@ export function Sidebar({
         <div className="flex-1 overflow-y-auto overflow-x-hidden">
 
           {/* New Chat Button */}
-          <div className="px-3 mb-1">
+          <div className="px-2 mb-1">
             <button
               onClick={onNewChat}
               className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg hover:bg-[var(--bg-surface)] transition-colors text-[var(--text-primary)]"
             >
-              <SquarePen className="w-5 h-5" />
+              <SquarePen className="w-4 h-4" />
               <span className="text-sm">New chat</span>
             </button>
           </div>
@@ -417,17 +413,12 @@ export function Sidebar({
               onClick={() => setIsSearchOpen(true)}
               className="flex items-center gap-3 w-full px-3 py-2 rounded-lg hover:bg-[var(--bg-surface)] transition-colors text-[var(--text-primary)]"
             >
-              <Search className="w-5 h-5 text-[var(--text-secondary)]" />
+              <Search className="w-4 h-4 text-[var(--text-secondary)]" />
               <span className="text-sm">Search chats</span>
             </button>
             <button className="flex items-center gap-3 w-full px-3 py-2 rounded-lg hover:bg-[var(--bg-surface)] transition-colors text-[var(--text-primary)]">
               {/* DALL-E / Images icon matching ChatGPT */}
-              <svg className="w-5 h-5 text-[var(--text-secondary)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="10" />
-                <path d="M8 12s1.5-2 4-2 4 2 4 2" />
-                <path d="M9 16c1-1.5 3-2 3-5" />
-                <path d="M15 16c-1-1.5-3-2-3-5" />
-              </svg>
+              <Images className="w-4 h-4 text-[var(--text-primary)]" />
               <span className="text-sm">Images</span>
             </button>
           </div>
@@ -649,18 +640,8 @@ export function Sidebar({
         </AnimatePresence>
 
         {/* Footer - User Section - STICKY BOTTOM */}
-        <div className="p-3 border-t border-[var(--border)] flex-shrink-0">
-          {!session ? (
-            <div className="space-y-3">
-              <button
-                onClick={onLoginClick}
-                className="w-full py-2.5 px-4 rounded-full bg-white text-black font-medium hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
-              >
-                <Gift className="w-4 h-4" />
-                Claim offer
-              </button>
-            </div>
-          ) : (
+        <div className="p-3 flex-shrink-0">
+          {session && (
             <div className="relative" ref={profileRef}>
               {/* User Info - Compact */}
               <button
@@ -721,6 +702,17 @@ export function Sidebar({
               </AnimatePresence>
             </div>
           )}
+
+          <div className="space-y-3 mt-4">
+            <button
+              onClick={onLoginClick}
+              className="w-full py-2.5 px-4 rounded-full bg-[var(--bg-code)] text-white text-xs border border-[var(--border-strong)] hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+            >
+              <Gift className="w-4 h-4" />
+              Claim offer
+            </button>
+          </div>
+
         </div>
       </div>
 
